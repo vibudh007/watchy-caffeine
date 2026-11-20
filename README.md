@@ -1,4 +1,5 @@
 # Watchy Caffeine
+## Stay active for weeks!
 
 Watchy Caffeine is low-power firmware for the ESP32-based Watchy 2.0. You can set the time from your phone and choose from 18 faces designed for the watch. With 140 mAh of usable battery capacity, the estimated runtime is **17 to 21 days**, depending on your step and Night mode settings.
 
