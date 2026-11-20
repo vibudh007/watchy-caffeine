@@ -14,3 +14,5 @@ The installer serves the release binary from the same origin as the page. The es
 The flash command uses `keep` for flash mode, size, and frequency and disables whole-chip erase. esptool-js verifies the written bytes inside `writeFlash` using the precomputed MD5 of the SHA-256-checked payload. The supported app partition ends at `0x26d000`. A new release needs the size, hashes, and labels updated together.
 
 The installer stays at 115200 baud to keep the browser from closing and reopening the serial port after the loader starts. The option under Connection details connects to an ESP32 already in download mode and skips the automatic reset sequence.
+
+`WatchyLoader.readPacket` allows 350 ms for ESP32 ROM sync responses. Other commands retain the upstream timeouts. Connection details shows boot mode, sync failures, and serial stream errors with the raw serial trace omitted.

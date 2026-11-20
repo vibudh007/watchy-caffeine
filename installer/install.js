@@ -24,7 +24,8 @@ function showStatus(message, error = false) {
 }
 
 function appendLog(message) {
-  if (/^MAC:\s/i.test(message.trimStart())) return;
+  const line = message.trimStart();
+  if (/^MAC:\s/i.test(line) || (line.startsWith("Debug:") && !/^Debug: (bootMode:|Error at sync)/.test(line))) return;
   log.textContent += message;
   log.scrollTop = log.scrollHeight;
 }
@@ -80,10 +81,26 @@ async function installFirmware(resetMode) {
     port = await navigator.serial.requestPort();
     showStatus("Downloading and checking the firmware.");
     const [{ ESPLoader, Transport }, data] = await Promise.all([loadFlasher(), loadFirmware()]);
-    transport = new Transport(port);
-    loader = new ESPLoader({
+    class WatchyLoader extends ESPLoader {
+      readPacket(opcode, timeout) {
+        return super.readPacket(opcode, opcode === 0x08 ? 350 : timeout);
+      }
+    }
+    const info = port.getInfo();
+    if (!info.usbVendorId || !info.usbProductId) {
+      appendLog("The browser returned a serial port without USB IDs.\n");
+    }
+    transport = new Transport(port, true);
+    transport.trace = message => {
+      if (/^(Recoverable serial port error|Unrecoverable serial port error|Serial port done|readLoop exited)/.test(message)) {
+        appendLog(message + "\n");
+      }
+    };
+    loader = new WatchyLoader({
       transport,
       baudrate: 115200,
+      serialOptions: { bufferSize: 8192, flowControl: "none" },
+      debugLogging: true,
       terminal: {
         clean() { log.textContent = ""; },
         write: appendLog,
