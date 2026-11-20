@@ -86,10 +86,6 @@ async function installFirmware(resetMode) {
         return super.readPacket(opcode, opcode === 0x08 ? 350 : timeout);
       }
     }
-    const info = port.getInfo();
-    if (!info.usbVendorId || !info.usbProductId) {
-      appendLog("The browser returned a serial port without USB IDs.\n");
-    }
     transport = new Transport(port, true);
     transport.trace = message => {
       if (/^(Recoverable serial port error|Unrecoverable serial port error|Serial port done|readLoop exited)/.test(message)) {
@@ -107,6 +103,10 @@ async function installFirmware(resetMode) {
         writeLine(message) { appendLog(message + "\n"); },
       },
     });
+    const info = port.getInfo();
+    if (!info.usbVendorId || !info.usbProductId) {
+      appendLog("The browser returned a serial port without USB IDs.\n");
+    }
     showStatus("Checking the watch’s hardware and partition layout.");
     const chip = await loader.main(resetMode);
     await checkWatch(loader, chip);
