@@ -12,12 +12,21 @@ const loaderUrl = "https://cdn.jsdelivr.net/npm/esptool-js@0.7.1/bundle.js";
 const loaderIntegrity = "sha256-1qSwt8m3R6c3DPqXYWSpYvVjMtX6p8O0XNuVoqix1FY=";
 
 const install = document.querySelector("#install");
+const resume = document.querySelector("#resume");
 const status = document.querySelector("#status");
 const progress = document.querySelector("#progress");
+const details = document.querySelector("#details");
+const log = document.querySelector("#log");
 
 function showStatus(message, error = false) {
   status.textContent = message;
   status.toggleAttribute("data-error", error);
+}
+
+function appendLog(message) {
+  if (/^MAC:\s/i.test(message.trimStart())) return;
+  log.textContent += message;
+  log.scrollTop = log.scrollHeight;
 }
 
 async function loadFlasher() {
@@ -56,8 +65,9 @@ async function checkWatch(loader, chipDescription) {
   if (digest !== partitionTable.md5) throw new Error("The watch does not have the supported stock partition layout.");
 }
 
-async function installFirmware() {
-  install.disabled = true;
+async function installFirmware(resetMode) {
+  install.disabled = resume.disabled = true;
+  log.textContent = "";
   progress.hidden = true;
   progress.value = 0;
   let port;
@@ -71,9 +81,17 @@ async function installFirmware() {
     showStatus("Downloading and checking the firmware.");
     const [{ ESPLoader, Transport }, data] = await Promise.all([loadFlasher(), loadFirmware()]);
     transport = new Transport(port);
-    loader = new ESPLoader({ transport, baudrate: 460800 });
+    loader = new ESPLoader({
+      transport,
+      baudrate: 115200,
+      terminal: {
+        clean() { log.textContent = ""; },
+        write: appendLog,
+        writeLine(message) { appendLog(message + "\n"); },
+      },
+    });
     showStatus("Checking the watch’s hardware and partition layout.");
-    const chip = await loader.main();
+    const chip = await loader.main(resetMode);
     await checkWatch(loader, chip);
     progress.hidden = false;
     showStatus("Writing firmware. Keep the watch connected.");
@@ -101,20 +119,22 @@ async function installFirmware() {
       showStatus("No port selected. Connect the watch and try again.");
     } else {
       showStatus(`Installation stopped. ${error?.message ?? error}`, true);
+      details.open = true;
     }
   } finally {
     if (transport && (port.readable || port.writable)) {
       if (loader && !reset) await loader.after("hard_reset").catch(() => {});
       await transport.disconnect().catch(() => {});
     }
-    install.disabled = false;
+    install.disabled = resume.disabled = false;
   }
 }
 
 if (window.isSecureContext && navigator.serial && crypto.subtle) {
   showStatus("Ready to connect.");
-  install.disabled = false;
-  install.addEventListener("click", installFirmware);
+  install.disabled = resume.disabled = false;
+  install.addEventListener("click", () => installFirmware("default_reset"));
+  resume.addEventListener("click", () => installFirmware("no_reset"));
 } else {
   showStatus("Open this page over HTTPS in desktop Chrome or Edge to install over USB.");
 }

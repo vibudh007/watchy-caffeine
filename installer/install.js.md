@@ -5,9 +5,12 @@ The installer serves the release binary from the same origin as the page. The es
 | Function | Purpose |
 | --- | --- |
 | `showStatus` | Set the live status message and indicate an error. |
+| `appendLog` | Show the local loader log without the board's MAC address. |
 | `loadFlasher` | Load the pinned flasher and release its temporary module URL. |
 | `loadFirmware` | Check the release size, sector-rounded app bounds, and SHA-256 before use. |
 | `checkWatch` | Require an ESP32-PICO-D4 with 4 MiB flash and the tested partition table at `0x8000`. |
 | `installFirmware` | Request the port from the button click, check the hardware, write the single app at `0x10000`, verify its flash MD5, then reset and close the port. |
 
 The flash command uses `keep` for flash mode, size, and frequency and disables whole-chip erase. esptool-js verifies the written bytes inside `writeFlash` using the precomputed MD5 of the SHA-256-checked payload. The supported app partition ends at `0x26d000`. A new release needs the size, hashes, and labels updated together.
+
+The installer stays at 115200 baud to keep the browser from closing and reopening the serial port after the loader starts. The option under Connection details connects to an ESP32 already in download mode and skips the automatic reset sequence.

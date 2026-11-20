@@ -82,6 +82,25 @@ progress {
 #status { margin-top: .65rem; overflow-wrap: anywhere; }
 #status[data-error] { color: #922a27; }
 
+details {
+  margin-top: 1rem;
+  border-top: 1px solid #d9cdbc;
+  padding-top: .75rem;
+}
+
+summary { cursor: pointer; }
+
+pre {
+  max-height: 12rem;
+  overflow: auto;
+  padding: .75rem;
+  border-radius: .4rem;
+  background: #f3eee6;
+  white-space: pre-wrap;
+}
+
+#resume { margin-top: .65rem; }
+
 @media (max-width: 31rem) {
   .heading { align-items: flex-start; }
   .heading img { width: 4rem; height: 4rem; }
