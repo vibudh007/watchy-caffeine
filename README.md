@@ -23,16 +23,9 @@ The bottom-left button opens **Menu** from the face.
 
 The **Clock** menu also lets you set the date and time by hand, switch between 12- and 24-hour time, and change the UTC offset in 15-minute steps.
 
-| Main menu | Clock format | Manual date and time |
-| :---: | :---: | :---: |
-| <img src="images/menu.png" width="200" alt="Main menu with Watch face, Clock, Steps, Alarm, Night mode, and Timers"> | <img src="images/format-focus.png" width="200" alt="Clock picker showing the focused row and the selected format"> | <img src="images/set-time.png" width="200" alt="Year, month, day, hour, and minute settings"> |
-
 ## Watch faces
 
 Open **Menu → Watch face** and use the right buttons to browse. Press **Select** to save the highlighted face. All 18 faces support 12- and 24-hour time.
-
-<details>
-<summary>See all 18 watch faces</summary>
 
 | Ledger | Split | Dial |
 | :---: | :---: | :---: |
@@ -48,7 +41,6 @@ Open **Menu → Watch face** and use the right buttons to browse. Press **Select
 | **Letterpress Time** | **Shortwave** | **Domino** |
 | <img src="images/letterpress-time.png" width="175" alt="Letterpress Time"> | <img src="images/shortwave.png" width="175" alt="Shortwave"> | <img src="images/domino.png" width="175" alt="Domino"> |
 
-</details>
 
 ## Steps and Night mode
 
