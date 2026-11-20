@@ -1,0 +1,5 @@
+/build/
+/source/candidate/sdkconfig
+/source/candidate/sdkconfig.old
+/watchy-backup.bin
+__pycache__/
