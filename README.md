@@ -81,16 +81,37 @@ Tested on one Watchy 2.0-compatible board with an ESP32-PICO-D4 rev. 1.1, 4 MiB 
 
 ## Install
 
-The app goes at `0x10000` on the tested stock layout and uses the existing bootloader and partition table. Download [watchy_caffeine.bin](watchy_caffeine.bin) and use esptool 4.13. Substitute your serial port for `/dev/ttyACM0`. Make the full-flash backup before writing the app and keep the backup private.
+Back up your watch, then open the [online installer](https://vibudh007.github.io/watchy-caffeine/installer/) in desktop Chrome or Edge. Connect the watch with a USB data cable, click **Install 0.1.0**, and select its serial port. Leave the cable connected until the installer verifies the write and restarts the watch.
+
+The installer checks for an ESP32-PICO-D4 with 4 MiB of flash and the stock Watchy 2.0 partition table. It writes the app at `0x10000` and preserves the bootloader, partition table, and saved settings.
+
+### Back up the watch
+
+Use esptool 4.13. Replace `/dev/ttyACM0` with your watch’s serial port. Keep the full-flash backup private.
 
 ```sh
 PORT=/dev/ttyACM0
+esptool --chip esp32 --port "$PORT" --baud 460800 \
+  read_flash 0x0 0x400000 watchy-backup.bin
+```
+
+### Linux serial connection
+
+If the browser immediately reports **The device has been lost**, close the installer tab. In the same shell you used for the backup, set the watch’s serial port to wait for at least one byte, then open the installer again. Some Chromium versions mistake an empty read on an idle Linux serial port for a disconnect. [Chromium fix](https://chromium-review.googlesource.com/c/chromium/src/+/8425442).
+
+```sh
+stty -F "$PORT" min 1 time 0
+```
+
+### Install from the command line
+
+Download [watchy_caffeine.bin](watchy_caffeine.bin). After backing up your watch, verify the file and flash it with esptool 4.13.
+
+```sh
 printf '%s  %s\n' \
   c76239a3045c2ee5966804deafcfa10561b644d11300d59c993ae1afd8bff51f \
   watchy_caffeine.bin | sha256sum -c -
 
-esptool --chip esp32 --port "$PORT" --baud 460800 \
-  read_flash 0x0 0x400000 watchy-backup.bin
 esptool --chip esp32 --port "$PORT" --baud 460800 --after no_reset \
   write_flash --flash_mode keep --flash_freq keep --flash_size keep \
   0x10000 watchy_caffeine.bin

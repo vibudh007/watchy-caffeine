@@ -16,3 +16,5 @@ The flash command uses `keep` for flash mode, size, and frequency and disables w
 The installer stays at 115200 baud to keep the browser from closing and reopening the serial port after the loader starts. The option under Connection details connects to an ESP32 already in download mode and skips the automatic reset sequence.
 
 `WatchyLoader.readPacket` allows 350 ms for ESP32 ROM sync responses. Other commands retain the upstream timeouts. Connection details shows boot mode, sync failures, and serial stream errors with the raw serial trace omitted.
+
+On an affected Chromium build on Linux, an idle serial port with `VMIN=0` and `VTIME=0` can be reported as disconnected as soon as Web Serial opens its read stream. The setup page links to the README workaround for the watch’s port. [Chromium fix](https://chromium-review.googlesource.com/c/chromium/src/+/8425442).
